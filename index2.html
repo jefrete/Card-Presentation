@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tetris Educativo AR</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body { background: #1a1a2e; overflow: hidden; touch-action: none; }
+        canvas { border: 4px solid #4e4eff; border-radius: 10px; background: #0f3460; }
+        .target-highlight { animation: bounce 1s infinite; }
+        @keyframes bounce { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.1); } }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col items-center justify-center p-2 text-white font-sans">
+
+    <div class="mb-4 text-center">
+        <h1 class="text-2xl font-bold mb-2">¡Buscamos la: <span id="targetChar" class="text-yellow-400 text-4xl block target-highlight">-</span></h1>
+        <div class="flex gap-2 justify-center">
+            <button id="modeLetters" class="bg-blue-600 px-4 py-2 rounded-full font-bold">Modo ABC</button>
+            <button id="modeNumbers" class="bg-green-600 px-4 py-2 rounded-full font-bold">Modo 123</button>
+        </div>
+    </div>
+
+    <div class="flex flex-col md:flex-row gap-6 items-center">
+        <canvas id="tetris" width="240" height="480"></canvas>
+
+        <div class="bg-white/10 p-6 rounded-2xl backdrop-blur-md w-48 text-center">
+            <p class="text-sm uppercase opacity-70">Puntos</p>
+            <p id="score" class="text-3xl font-black mb-4">0</p>
+            
+            <p class="text-sm uppercase opacity-70">Siguiente</p>
+            <div id="nextChar" class="text-5xl font-bold text-yellow-400 my-2">-</div>
+            
+            <button id="pauseBtn" class="mt-4 w-full bg-red-500 py-2 rounded-lg font-bold">PAUSA</button>
+        </div>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('tetris');
+        const context = canvas.getContext('2d');
+        const targetDisplay = document.getElementById('targetChar');
+        
+        // --- CONFIGURACIÓN DE VOZ ---
+        function decir(texto) {
+            const msg = new SpeechSynthesisUtterance();
+            msg.text = texto;
+            msg.lang = 'es-AR'; // Localización Argentina
+            msg.rate = 0.9;
+            window.speechSynthesis.speak(msg);
+        }
+
+        class Game {
+            constructor() {
+                this.grid = Array(20).fill().map(() => Array(10).fill(0));
+                this.score = 0;
+                this.mode = 'letters'; // 'letters' o 'numbers'
+                this.target = '';
+                this.paused = false;
+                
+                this.player = {
+                    pos: {x: 0, y: 0},
+                    char: '',
+                    matrix: [[1]], // Piezas simples de 1x1 para facilitar el aprendizaje
+                    color: '#ff0'
+                };
+
+                this.dropCounter = 0;
+                this.dropInterval = 1000;
+                this.lastTime = 0;
+
+                this.init();
+            }
+
+            init() {
+                this.setNewTarget();
+                this.resetPlayer();
+                this.update();
+                this.setupControls();
+                decir("¡Hola! Vamos a jugar. Buscamos la " + this.target);
+            }
+
+            setNewTarget() {
+                const chars = this.mode === 'letters' ? 'ABCDEFGHIJKLMNÑOPQRSTUVWXYZ' : '1234567890';
+                this.target = chars[Math.floor(Math.random() * chars.length)];
+                targetDisplay.textContent = this.target;
+            }
+
+            resetPlayer() {
+                const chars = this.mode === 'letters' ? 'ABCDEFGHIJKLMNÑOPQRSTUVWXYZ' : '1234567890';
+                this.player.char = chars[Math.floor(Math.random() * chars.length)];
+                this.player.pos.y = 0;
+                this.player.pos.x = 4;
+                this.player.color = `hsl(${Math.random() * 360}, 70%, 60%)`;
+                
+                document.getElementById('nextChar').textContent = this.player.char;
+
+                if (this.collide()) {
+                    // Game Over
+                    this.grid.forEach(row => row.fill(0));
+                    this.score = 0;
+                    decir("¡Oh no! Se llenó el tablero. Empecemos de nuevo.");
+                }
+            }
+
+            draw() {
+                context.fillStyle = '#0f3460';
+                context.fillRect(0, 0, canvas.width, canvas.height);
+
+                // Dibujar Tablero
+                this.grid.forEach((row, y) => {
+                    row.forEach((value, x) => {
+                        if (value !== 0) {
+                            this.drawBlock(x, y, value.char, value.color);
+                        }
+                    });
+                });
+
+                // Dibujar Pieza Actual
+                this.drawBlock(this.player.pos.x, this.player.pos.y, this.player.char, this.player.color);
+            }
+
+            drawBlock(x, y, char, color) {
+                const size = 24;
+                context.fillStyle = color;
+                context.fillRect(x * size, y * size, size - 2, size - 2);
+                context.fillStyle = 'white';
+                context.font = 'bold 18px Arial';
+                context.textAlign = 'center';
+                context.fillText(char, (x * size) + size/2, (y * size) + size/1.4);
+            }
+
+            collide() {
+                if (this.player.pos.y >= 19 || this.grid[this.player.pos.y + 1][this.player.pos.x] !== 0) {
+                    return true;
+                }
+                return false;
+            }
+
+            drop() {
+                if (this.paused) return;
+                
+                if (this.collide()) {
+                    this.merge();
+                    return;
+                }
+                this.player.pos.y++;
+                this.dropCounter = 0;
+            }
+
+            merge() {
+                // Al tocar fondo, escuchamos qué letra es
+                decir(this.player.char);
+
+                if (this.player.char === this.target) {
+                    this.score += 100;
+                    decir("¡Excelente! Encontraste la " + this.target);
+                    this.setNewTarget();
+                    // No la guardamos en el tablero (la "tachamos")
+                } else {
+                    this.grid[this.player.pos.y][this.player.pos.x] = {
+                        char: this.player.char,
+                        color: this.player.color
+                    };
+                }
+                
+                this.resetPlayer();
+                document.getElementById('score').textContent = this.score;
+            }
+
+            move(dir) {
+                const newX = this.player.pos.x + dir;
+                if (newX >= 0 && newX < 10 && this.grid[this.player.pos.y][newX] === 0) {
+                    this.player.pos.x = newX;
+                }
+            }
+
+            update(time = 0) {
+                const deltaTime = time - this.lastTime;
+                this.lastTime = time;
+
+                this.dropCounter += deltaTime;
+                if (this.dropCounter > this.dropInterval) {
+                    this.drop();
+                }
+
+                this.draw();
+                requestAnimationFrame((t) => this.update(t));
+            }
+
+            setupControls() {
+                document.addEventListener('keydown', e => {
+                    // EVITA QUE LA PANTALLA SE MUEVA
+                    if (["ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight", " "].includes(e.key)) {
+                        e.preventDefault();
+                    }
+
+                    if (e.key === 'ArrowLeft') this.move(-1);
+                    if (e.key === 'ArrowRight') this.move(1);
+                    if (e.key === 'ArrowDown') this.drop();
+                });
+
+                document.getElementById('modeLetters').onclick = () => {
+                    this.mode = 'letters';
+                    this.grid.forEach(row => row.fill(0));
+                    this.init();
+                };
+
+                document.getElementById('modeNumbers').onclick = () => {
+                    this.mode = 'numbers';
+                    this.grid.forEach(row => row.fill(0));
+                    this.init();
+                };
+
+                document.getElementById('pauseBtn').onclick = () => {
+                    this.paused = !this.paused;
+                    document.getElementById('pauseBtn').textContent = this.paused ? "JUGAR" : "PAUSA";
+                };
+            }
+        }
+
+        const game = new Game();
+    </script>
+</body>
+</html>
