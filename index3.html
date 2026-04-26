@@ -1,265 +1,83 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Conecta 3: ABC y 123</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <style>
-        body { background: #0f172a; overflow: hidden; touch-action: none; font-family: 'Inter', sans-serif; }
-        canvas { 
-            border: 8px solid #1e293b; 
-            border-radius: 16px; 
-            background: #1e293b;
-            box-shadow: 0 0 30px rgba(0,0,0,0.5);
-        }
-        .stats-card { background: rgba(30, 41, 59, 0.7); backdrop-filter: blur(10px); }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>JEF TECH Glass Links</title>
+  <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body class="min-h-screen flex flex-col items-center justify-center p-4 text-white">
+<body class="min-h-screen bg-gradient-to-br from-slate-900 via-indigo-900 to-black text-white overflow-hidden relative">
 
-    <div class="mb-6 text-center">
-        <h1 class="text-3xl font-black text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-blue-500 uppercase tracking-widest">Conecta 3 Educativo</h1>
-        <p class="text-slate-400">Juntá 3 iguales (↔ ↕ ⤢) para aprender</p>
+    <!-- fondo animado flotante -->
+    <div class="absolute inset-0 overflow-hidden">
+        <div class="absolute w-80 h-80 bg-blue-500/20 rounded-full blur-3xl top-0 left-0 animate-pulse"></div>
+        <div class="absolute w-72 h-72 bg-purple-500/20 rounded-full blur-3xl bottom-0 right-0 animate-bounce"></div>
     </div>
 
-    <div class="flex flex-col md:flex-row gap-8 items-start">
-        <canvas id="gameCanvas" width="300" height="540"></canvas>
+    <main class="relative z-10 min-h-screen flex items-center justify-center px-4 py-10">
+        <div class="w-full max-w-md text-center backdrop-blur-xl bg-white/10 border border-white/20 rounded-3xl p-8 shadow-2xl">
 
-        <div class="flex flex-col gap-4 w-64">
-            <div class="stats-card p-6 rounded-2xl border border-slate-700">
-                <p class="text-xs text-slate-400 uppercase font-bold mb-1">Puntos</p>
-                <p id="score" class="text-4xl font-mono font-bold text-yellow-400">0</p>
+            <!-- Avatar -->
+            <img 
+                src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e"
+                alt="avatar"
+                class="w-24 h-24 md:w-32 md:h-32 rounded-full mx-auto object-cover border-4 border-white shadow-lg hover:rotate-6 hover:scale-110 transition duration-500"
+            >
+
+            <h1 class="text-3xl md:text-5xl font-bold mt-5">
+                JEF TECH
+            </h1>
+
+            <p class="text-gray-300 mt-2 mb-8 text-sm md:text-base">
+                Full Stack • Creator • Builder
+            </p>
+
+            <!-- Links -->
+            <div class="space-y-4">
+
+                <a href="https://github.com/jefrete"
+                   class="block bg-white/10 backdrop-blur-lg border border-white/20 p-4 rounded-2xl hover:bg-white hover:text-black hover:translate-y-[-5px] transition duration-300">
+                   GitHub
+                </a>
+
+                <a href="https://intro-jef-tech.vercel.app/"
+                   class="block bg-white/10 backdrop-blur-lg border border-white/20 p-4 rounded-2xl hover:bg-blue-500 hover:text-white hover:translate-y-[-5px] transition duration-300">
+                   Portfolio
+                </a>
+
+                <a href="https://instagram.com"
+                   class="block bg-white/10 backdrop-blur-lg border border-white/20 p-4 rounded-2xl hover:bg-pink-500 hover:text-white hover:translate-y-[-5px] transition duration-300">
+                   Instagram
+                </a>
+
+                <a href="https://linkedin.com"
+                   class="block bg-white/10 backdrop-blur-lg border border-white/20 p-4 rounded-2xl hover:bg-cyan-500 hover:text-white hover:translate-y-[-5px] transition duration-300">
+                   LinkedIn
+                </a>
+
             </div>
 
-            <div class="stats-card p-6 rounded-2xl border border-slate-700 text-center">
-                <p class="text-xs text-slate-400 uppercase font-bold mb-2">Modo</p>
-                <div class="flex gap-2">
-                    <button id="modeLetters" class="flex-1 bg-blue-600 hover:bg-blue-500 py-2 rounded-lg text-xs font-bold transition-colors">ABC</button>
-                    <button id="modeNumbers" class="flex-1 bg-emerald-600 hover:bg-emerald-500 py-2 rounded-lg text-xs font-bold transition-colors">123</button>
-                </div>
-            </div>
+            <footer class="mt-8 text-xs text-gray-400">
+                Glass Edition ✨
+            </footer>
 
-            <div class="stats-card p-6 rounded-2xl border border-slate-700">
-                <p class="text-xs text-slate-400 uppercase font-bold mb-4">Controles</p>
-                <ul class="text-xs text-slate-300 space-y-2">
-                    <li>⬅️ ➡️ Mover</li>
-                    <li>⬇️ Bajar</li>
-                    <li>⎵ Espacio: Caída rápida</li>
-                </ul>
-            </div>
         </div>
-    </div>
+    </main>
 
     <script>
-        const canvas = document.getElementById('gameCanvas');
-        const ctx = canvas.getContext('2d');
-        const scoreEl = document.getElementById('score');
-        
-        const COLS = 6;
-        const ROWS = 11;
-        const SIZE = 50;
+        const cards = document.querySelectorAll('a');
 
-        function decir(texto) {
-            window.speechSynthesis.cancel();
-            const msg = new SpeechSynthesisUtterance(texto);
-            msg.lang = 'es-AR';
-            msg.rate = 1.1;
-            window.speechSynthesis.speak(msg);
-        }
+        cards.forEach((card, index) => {
+            card.style.opacity = '0';
+            card.style.transform = 'scale(0.8)';
 
-        class Game {
-            constructor() {
-                this.grid = Array(ROWS).fill().map(() => Array(COLS).fill(null));
-                this.score = 0;
-                this.mode = 'letters';
-                this.gameOver = false;
-                this.player = { x: 2, y: 0, char: '', color: '' };
-                this.dropInterval = 1000;
-                this.lastTime = 0;
-                this.init();
-            }
-
-            init() {
-                this.resetPlayer();
-                this.update();
-                this.setupEvents();
-            }
-
-            resetPlayer() {
-                const chars = this.mode === 'letters' ? 'ABCDEFGHIJKLMNÑOPQRSTUVWXYZ' : '1234567890';
-                this.player.char = chars[Math.floor(Math.random() * chars.length)];
-                this.player.x = Math.floor(COLS / 2);
-                this.player.y = 0;
-                this.player.color = `hsl(${Math.random() * 360}, 70%, 50%)`;
-                
-                if (this.grid[0][this.player.x]) {
-                    this.gameOver = true;
-                    decir("Juego terminado. ¡Lo hiciste muy bien!");
-                }
-            }
-
-            draw() {
-                ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-                // Dibujar Grilla
-                this.grid.forEach((row, y) => {
-                    row.forEach((cell, x) => {
-                        if (cell) this.drawBlock(x, y, cell.char, cell.color);
-                    });
-                });
-
-                // Dibujar Jugador
-                if (!this.gameOver) {
-                    this.drawBlock(this.player.x, this.player.y, this.player.char, this.player.color);
-                }
-            }
-
-            drawBlock(x, y, char, color) {
-                ctx.fillStyle = color;
-                ctx.shadowBlur = 10;
-                ctx.shadowColor = color;
-                ctx.beginPath();
-                ctx.roundRect(x * SIZE + 2, y * SIZE + 2, SIZE - 4, SIZE - 4, 8);
-                ctx.fill();
-                
-                ctx.shadowBlur = 0;
-                ctx.fillStyle = 'white';
-                ctx.font = 'bold 24px Inter, sans-serif';
-                ctx.textAlign = 'center';
-                ctx.textBaseline = 'middle';
-                ctx.fillText(char, x * SIZE + SIZE/2, y * SIZE + SIZE/2);
-            }
-
-            move(dx) {
-                const newX = this.player.x + dx;
-                if (newX >= 0 && newX < COLS && !this.grid[this.player.y][newX]) {
-                    this.player.x = newX;
-                }
-            }
-
-            drop() {
-                if (this.gameOver) return;
-                if (this.player.y + 1 < ROWS && !this.grid[this.player.y + 1][this.player.x]) {
-                    this.player.y++;
-                } else {
-                    this.lock();
-                }
-            }
-
-            hardDrop() {
-                while (this.player.y + 1 < ROWS && !this.grid[this.player.y + 1][this.player.x]) {
-                    this.player.y++;
-                }
-                this.lock();
-            }
-
-            lock() {
-                this.grid[this.player.y][this.player.x] = {
-                    char: this.player.char,
-                    color: this.player.color
-                };
-                decir(this.player.char);
-                this.checkMatches();
-                this.resetPlayer();
-            }
-
-            checkMatches() {
-                let toRemove = new Set();
-
-                // Direcciones: Horizontal, Vertical, Diagonal\ , Diagonal/
-                const dirs = [[1,0], [0,1], [1,1], [1,-1]];
-
-                for (let y = 0; y < ROWS; y++) {
-                    for (let x = 0; x < COLS; x++) {
-                        const current = this.grid[y][x];
-                        if (!current) continue;
-
-                        dirs.forEach(([dx, dy]) => {
-                            let match = [[x, y]];
-                            for (let i = 1; i < 4; i++) {
-                                let nx = x + dx * i;
-                                let ny = y + dy * i;
-                                if (nx >= 0 && nx < COLS && ny >= 0 && ny < ROWS && 
-                                    this.grid[ny][nx] && this.grid[ny][nx].char === current.char) {
-                                    match.push([nx, ny]);
-                                } else break;
-                            }
-                            if (match.length >= 3) {
-                                match.forEach(pos => toRemove.add(pos.join(',')));
-                            }
-                        });
-                    }
-                }
-
-                if (toRemove.size > 0) {
-                    decir("¡Genial! Juntaste las " + this.grid[parseInt([...toRemove][0].split(',')[1])][parseInt([...toRemove][0].split(',')[0])].char);
-                    toRemove.forEach(pos => {
-                        const [x, y] = pos.split(',').map(Number);
-                        this.grid[y][x] = null;
-                        this.score += 50;
-                    });
-                    this.applyGravity();
-                    scoreEl.textContent = this.score;
-                }
-            }
-
-            applyGravity() {
-                for (let x = 0; x < COLS; x++) {
-                    for (let y = ROWS - 1; y > 0; y--) {
-                        if (!this.grid[y][x]) {
-                            for (let ny = y - 1; ny >= 0; ny--) {
-                                if (this.grid[ny][x]) {
-                                    this.grid[y][x] = this.grid[ny][x];
-                                    this.grid[ny][x] = null;
-                                    break;
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-
-            update(time = 0) {
-                const dt = time - this.lastTime;
-                this.lastTime = time;
-                this.dropCounter = (this.dropCounter || 0) + dt;
-
-                if (this.dropCounter > this.dropInterval) {
-                    this.drop();
-                    this.dropCounter = 0;
-                }
-
-                this.draw();
-                if (!this.gameOver) requestAnimationFrame(t => this.update(t));
-            }
-
-            setupEvents() {
-                window.addEventListener('keydown', e => {
-                    if (["ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight", " "].includes(e.key)) e.preventDefault();
-                    if (this.gameOver) return;
-
-                    if (e.key === 'ArrowLeft') this.move(-1);
-                    if (e.key === 'ArrowRight') this.move(1);
-                    if (e.key === 'ArrowDown') this.drop();
-                    if (e.key === ' ') this.hardDrop();
-                });
-
-                document.getElementById('modeLetters').onclick = () => { this.mode = 'letters'; this.resetGame(); };
-                document.getElementById('modeNumbers').onclick = () => { this.mode = 'numbers'; this.resetGame(); };
-            }
-
-            resetGame() {
-                this.grid = Array(ROWS).fill().map(() => Array(COLS).fill(null));
-                this.score = 0;
-                scoreEl.textContent = "0";
-                this.gameOver = false;
-                this.resetPlayer();
-                decir("Cambiamos de modo. ¡A jugar!");
-            }
-        }
-
-        new Game();
+            setTimeout(() => {
+                card.style.transition = 'all 0.6s ease';
+                card.style.opacity = '1';
+                card.style.transform = 'scale(1)';
+            }, index * 250);
+        });
     </script>
+
 </body>
 </html>

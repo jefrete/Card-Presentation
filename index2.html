@@ -1,225 +1,86 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tetris Educativo AR</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <style>
-        body { background: #1a1a2e; overflow: hidden; touch-action: none; }
-        canvas { border: 4px solid #4e4eff; border-radius: 10px; background: #0f3460; }
-        .target-highlight { animation: bounce 1s infinite; }
-        @keyframes bounce { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.1); } }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>JEF TECH Neon Links</title>
+  <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body class="min-h-screen flex flex-col items-center justify-center p-2 text-white font-sans">
+<body class="min-h-screen bg-black text-white overflow-hidden relative">
 
-    <div class="mb-4 text-center">
-        <h1 class="text-2xl font-bold mb-2">¡Buscamos la: <span id="targetChar" class="text-yellow-400 text-4xl block target-highlight">-</span></h1>
-        <div class="flex gap-2 justify-center">
-            <button id="modeLetters" class="bg-blue-600 px-4 py-2 rounded-full font-bold">Modo ABC</button>
-            <button id="modeNumbers" class="bg-green-600 px-4 py-2 rounded-full font-bold">Modo 123</button>
-        </div>
+    <!-- partículas fake -->
+    <div class="absolute inset-0 overflow-hidden">
+        <div class="absolute w-72 h-72 bg-blue-500/20 rounded-full blur-3xl top-10 left-10 animate-pulse"></div>
+        <div class="absolute w-72 h-72 bg-pink-500/20 rounded-full blur-3xl bottom-10 right-10 animate-bounce"></div>
+        <div class="absolute w-64 h-64 bg-purple-500/20 rounded-full blur-3xl top-1/2 left-1/2 animate-spin"></div>
     </div>
 
-    <div class="flex flex-col md:flex-row gap-6 items-center">
-        <canvas id="tetris" width="240" height="480"></canvas>
+    <main class="relative z-10 min-h-screen flex items-center justify-center px-4">
+        <div class="w-full max-w-md text-center">
 
-        <div class="bg-white/10 p-6 rounded-2xl backdrop-blur-md w-48 text-center">
-            <p class="text-sm uppercase opacity-70">Puntos</p>
-            <p id="score" class="text-3xl font-black mb-4">0</p>
-            
-            <p class="text-sm uppercase opacity-70">Siguiente</p>
-            <div id="nextChar" class="text-5xl font-bold text-yellow-400 my-2">-</div>
-            
-            <button id="pauseBtn" class="mt-4 w-full bg-red-500 py-2 rounded-lg font-bold">PAUSA</button>
+            <!-- avatar -->
+            <div class="mb-8">
+                <img
+                    src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e"
+                    class="w-28 h-28 md:w-32 md:h-32 rounded-full mx-auto object-cover border-4 border-cyan-400 shadow-[0_0_30px_cyan] hover:scale-110 transition duration-500"
+                    alt="avatar"
+                >
+
+                <h1 class="text-4xl md:text-6xl font-bold mt-4 text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-purple-500 animate-pulse">
+                    JEF TECH
+                </h1>
+
+                <p class="text-gray-300 mt-3">
+                    Developer • Cyber Creator ⚡
+                </p>
+            </div>
+
+            <!-- links -->
+            <div class="space-y-5">
+
+                <a href="https://github.com/jefrete"
+                   class="block border border-cyan-400 p-4 rounded-xl hover:bg-cyan-400 hover:text-black hover:scale-110 transition duration-300 shadow-[0_0_20px_cyan]">
+                   GitHub
+                </a>
+
+                <a href="https://intro-jef-tech.vercel.app/"
+                   class="block border border-pink-400 p-4 rounded-xl hover:bg-pink-400 hover:text-black hover:scale-110 transition duration-300 shadow-[0_0_20px_pink]">
+                   Portfolio
+                </a>
+
+                <a href="https://instagram.com"
+                   class="block border border-yellow-400 p-4 rounded-xl hover:bg-yellow-400 hover:text-black hover:rotate-2 transition duration-300 shadow-[0_0_20px_yellow]">
+                   Instagram
+                </a>
+
+                <a href="https://youtube.com"
+                   class="block border border-red-500 p-4 rounded-xl hover:bg-red-500 hover:text-white hover:scale-110 transition duration-300 shadow-[0_0_20px_red]">
+                   YouTube
+                </a>
+
+            </div>
+
+            <footer class="mt-10 text-sm text-gray-400 animate-pulse">
+                Neon Edition © 2026
+            </footer>
+
         </div>
-    </div>
+    </main>
 
     <script>
-        const canvas = document.getElementById('tetris');
-        const context = canvas.getContext('2d');
-        const targetDisplay = document.getElementById('targetChar');
-        
-        // --- CONFIGURACIÓN DE VOZ ---
-        function decir(texto) {
-            const msg = new SpeechSynthesisUtterance();
-            msg.text = texto;
-            msg.lang = 'es-AR'; // Localización Argentina
-            msg.rate = 0.9;
-            window.speechSynthesis.speak(msg);
-        }
+        const buttons = document.querySelectorAll('a');
 
-        class Game {
-            constructor() {
-                this.grid = Array(20).fill().map(() => Array(10).fill(0));
-                this.score = 0;
-                this.mode = 'letters'; // 'letters' o 'numbers'
-                this.target = '';
-                this.paused = false;
-                
-                this.player = {
-                    pos: {x: 0, y: 0},
-                    char: '',
-                    matrix: [[1]], // Piezas simples de 1x1 para facilitar el aprendizaje
-                    color: '#ff0'
-                };
+        buttons.forEach((btn, index) => {
+            btn.style.opacity = '0';
+            btn.style.transform = 'translateX(-50px)';
 
-                this.dropCounter = 0;
-                this.dropInterval = 1000;
-                this.lastTime = 0;
-
-                this.init();
-            }
-
-            init() {
-                this.setNewTarget();
-                this.resetPlayer();
-                this.update();
-                this.setupControls();
-                decir("¡Hola! Vamos a jugar. Buscamos la " + this.target);
-            }
-
-            setNewTarget() {
-                const chars = this.mode === 'letters' ? 'ABCDEFGHIJKLMNÑOPQRSTUVWXYZ' : '1234567890';
-                this.target = chars[Math.floor(Math.random() * chars.length)];
-                targetDisplay.textContent = this.target;
-            }
-
-            resetPlayer() {
-                const chars = this.mode === 'letters' ? 'ABCDEFGHIJKLMNÑOPQRSTUVWXYZ' : '1234567890';
-                this.player.char = chars[Math.floor(Math.random() * chars.length)];
-                this.player.pos.y = 0;
-                this.player.pos.x = 4;
-                this.player.color = `hsl(${Math.random() * 360}, 70%, 60%)`;
-                
-                document.getElementById('nextChar').textContent = this.player.char;
-
-                if (this.collide()) {
-                    // Game Over
-                    this.grid.forEach(row => row.fill(0));
-                    this.score = 0;
-                    decir("¡Oh no! Se llenó el tablero. Empecemos de nuevo.");
-                }
-            }
-
-            draw() {
-                context.fillStyle = '#0f3460';
-                context.fillRect(0, 0, canvas.width, canvas.height);
-
-                // Dibujar Tablero
-                this.grid.forEach((row, y) => {
-                    row.forEach((value, x) => {
-                        if (value !== 0) {
-                            this.drawBlock(x, y, value.char, value.color);
-                        }
-                    });
-                });
-
-                // Dibujar Pieza Actual
-                this.drawBlock(this.player.pos.x, this.player.pos.y, this.player.char, this.player.color);
-            }
-
-            drawBlock(x, y, char, color) {
-                const size = 24;
-                context.fillStyle = color;
-                context.fillRect(x * size, y * size, size - 2, size - 2);
-                context.fillStyle = 'white';
-                context.font = 'bold 18px Arial';
-                context.textAlign = 'center';
-                context.fillText(char, (x * size) + size/2, (y * size) + size/1.4);
-            }
-
-            collide() {
-                if (this.player.pos.y >= 19 || this.grid[this.player.pos.y + 1][this.player.pos.x] !== 0) {
-                    return true;
-                }
-                return false;
-            }
-
-            drop() {
-                if (this.paused) return;
-                
-                if (this.collide()) {
-                    this.merge();
-                    return;
-                }
-                this.player.pos.y++;
-                this.dropCounter = 0;
-            }
-
-            merge() {
-                // Al tocar fondo, escuchamos qué letra es
-                decir(this.player.char);
-
-                if (this.player.char === this.target) {
-                    this.score += 100;
-                    decir("¡Excelente! Encontraste la " + this.target);
-                    this.setNewTarget();
-                    // No la guardamos en el tablero (la "tachamos")
-                } else {
-                    this.grid[this.player.pos.y][this.player.pos.x] = {
-                        char: this.player.char,
-                        color: this.player.color
-                    };
-                }
-                
-                this.resetPlayer();
-                document.getElementById('score').textContent = this.score;
-            }
-
-            move(dir) {
-                const newX = this.player.pos.x + dir;
-                if (newX >= 0 && newX < 10 && this.grid[this.player.pos.y][newX] === 0) {
-                    this.player.pos.x = newX;
-                }
-            }
-
-            update(time = 0) {
-                const deltaTime = time - this.lastTime;
-                this.lastTime = time;
-
-                this.dropCounter += deltaTime;
-                if (this.dropCounter > this.dropInterval) {
-                    this.drop();
-                }
-
-                this.draw();
-                requestAnimationFrame((t) => this.update(t));
-            }
-
-            setupControls() {
-                document.addEventListener('keydown', e => {
-                    // EVITA QUE LA PANTALLA SE MUEVA
-                    if (["ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight", " "].includes(e.key)) {
-                        e.preventDefault();
-                    }
-
-                    if (e.key === 'ArrowLeft') this.move(-1);
-                    if (e.key === 'ArrowRight') this.move(1);
-                    if (e.key === 'ArrowDown') this.drop();
-                });
-
-                document.getElementById('modeLetters').onclick = () => {
-                    this.mode = 'letters';
-                    this.grid.forEach(row => row.fill(0));
-                    this.init();
-                };
-
-                document.getElementById('modeNumbers').onclick = () => {
-                    this.mode = 'numbers';
-                    this.grid.forEach(row => row.fill(0));
-                    this.init();
-                };
-
-                document.getElementById('pauseBtn').onclick = () => {
-                    this.paused = !this.paused;
-                    document.getElementById('pauseBtn').textContent = this.paused ? "JUGAR" : "PAUSA";
-                };
-            }
-        }
-
-        const game = new Game();
+            setTimeout(() => {
+                btn.style.transition = 'all 0.8s ease';
+                btn.style.opacity = '1';
+                btn.style.transform = 'translateX(0px)';
+            }, index * 300);
+        });
     </script>
+
 </body>
 </html>
