@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>JEF TECH | Links</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com"></script>
+<style>
+  :root{
+    --bg:#0A0E14;
+    --panel:#10151C;
+    --line:#232A33;
+    --text:#E6EDF3;
+    --dim:#7D8590;
+    --accent:#3FB950;
+    --accent-ink:#04120A;
+    --danger:#FF5F56;
+    --warn:#FFBD2E;
+  }
+
+  html,body{
+    background:var(--bg);
+    color:var(--text);
+    font-family:'JetBrains Mono', ui-monospace, monospace;
+  }
+
+  /* subtle terminal grid texture, no glow orbs */
+  body{
+    background-image:
+      linear-gradient(rgba(255,255,255,0.025) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,255,255,0.025) 1px, transparent 1px);
+    background-size: 42px 42px;
+    background-position: center;
+  }
+
+  .win{
+    background:var(--panel);
+    border:1px solid var(--line);
+    border-radius:8px;
+  }
+
+  .win-bar{
+    display:flex;
+    align-items:center;
+    gap:8px;
+    padding:10px 14px;
+    border-bottom:1px solid var(--line);
+  }
+
+  .dot{width:11px;height:11px;border-radius:999px;display:inline-block;}
+
+  .win-title{
+    margin-left:6px;
+    font-size:12px;
+    color:var(--dim);
+    letter-spacing:0.02em;
+  }
+
+  .prompt{color:var(--accent);}
+  .dim{color:var(--dim);}
+
+  .row{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:12px;
+    padding:16px 18px;
+    border-bottom:1px solid var(--line);
+    text-decoration:none;
+    color:var(--text);
+    transition: background-color .15s ease, color .15s ease;
+  }
+  .row:last-child{border-bottom:none;}
+
+  .row:hover, .row:focus-visible{
+    background: rgba(63,185,80,0.07);
+    color:#fff;
+  }
+
+  .row:hover .cmd, .row:focus-visible .cmd{ color: var(--accent); }
+
+  .row .cursor{
+    opacity:0;
+    color:var(--accent);
+  }
+  .row:hover .cursor, .row:focus-visible .cursor{
+    opacity:1;
+    animation: blink 1s steps(1) infinite;
+  }
+
+  .cta{
+    background:var(--accent);
+    color:var(--accent-ink);
+  }
+  .cta:hover, .cta:focus-visible{
+    background:#4fd062;
+    color:var(--accent-ink);
+  }
+  .cta .cmd{ color:var(--accent-ink) !important; }
+  .cta .cursor{ color:var(--accent-ink) !important; }
+
+  @keyframes blink{
+    0%,49%{opacity:1;}
+    50%,100%{opacity:0;}
+  }
+
+  .boot-line{
+    opacity:0;
+  }
+  .boot-line.show{
+    opacity:1;
+  }
+
+  .caret{
+    display:inline-block;
+    width:8px;
+    height:1em;
+    background:var(--accent);
+    vertical-align:text-bottom;
+    margin-left:2px;
+    animation: blink 1s steps(1) infinite;
+  }
+
+  a:focus-visible, .row:focus-visible{
+    outline: 2px solid var(--accent);
+    outline-offset: -2px;
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    .boot-line{opacity:1 !important;}
+    .caret, .cursor{animation:none !important;}
+  }
+</style>
+</head>
+
+<body class="min-h-screen">
+
+  <main class="min-h-screen flex items-center justify-center px-5 py-12 md:px-10 lg:px-16">
+
+    <div class="w-full max-w-4xl grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8 items-start">
+
+      <!-- PROFILE TERMINAL -->
+      <section class="win overflow-hidden">
+        <div class="win-bar">
+          <span class="dot" style="background:var(--danger)"></span>
+          <span class="dot" style="background:var(--warn)"></span>
+          <span class="dot" style="background:var(--accent)"></span>
+          <span class="win-title">profile.sh</span>
+        </div>
+
+        <div class="p-5 md:p-6">
+          <img
+            src="jef-tech-logo.png"
+            alt="JEF TECH"
+            class="w-20 h-20 md:w-24 md:h-24 object-cover rounded-md border border-[var(--line)] mb-5"
+            style="filter:grayscale(0.35) contrast(1.05);"
+          >
+
+          <p class="boot-line text-sm md:text-base leading-7" data-line>
+            <span class="prompt">julian@jef-tech</span><span class="dim">:~$</span> whoami
+          </p>
+          <p class="boot-line text-sm md:text-base leading-7 dim" data-line>&gt; constructor de software</p>
+
+          <p class="boot-line text-sm md:text-base leading-7 mt-3" data-line>
+            <span class="prompt">julian@jef-tech</span><span class="dim">:~$</span> ubicacion
+          </p>
+          <p class="boot-line text-sm md:text-base leading-7 dim" data-line>&gt; buenos aires, argentina</p>
+
+          <p class="boot-line text-sm md:text-base leading-7 mt-3" data-line>
+            <span class="prompt">julian@jef-tech</span><span class="dim">:~$</span> status
+          </p>
+          <p class="boot-line text-lg md:text-2xl font-bold leading-8 mt-1" data-line>
+            construyendo tecnología<span class="caret" id="caret"></span>
+          </p>
+        </div>
+      </section>
+
+      <!-- LINKS TERMINAL -->
+      <section class="win overflow-hidden">
+        <div class="win-bar">
+          <span class="dot" style="background:var(--danger)"></span>
+          <span class="dot" style="background:var(--warn)"></span>
+          <span class="dot" style="background:var(--accent)"></span>
+          <span class="win-title">links.sh</span>
+        </div>
+
+        <nav>
+          <a href="https://github.com/jefrete" target="_blank" rel="noopener noreferrer" class="row">
+            <span><span class="dim">$</span> <span class="cmd">github</span> <span class="dim ml-2 text-xs">code y proyectos</span></span>
+            <span class="cursor">▊</span>
+          </a>
+
+          <a href="https://intro-jef-tech.vercel.app/" target="_blank" rel="noopener noreferrer" class="row">
+            <span><span class="dim">$</span> <span class="cmd">portfolio</span> <span class="dim ml-2 text-xs">trabajo completo</span></span>
+            <span class="cursor">▊</span>
+          </a>
+
+          <a href="https://www.linkedin.com/in/julianfreteiommi/" target="_blank" rel="noopener noreferrer" class="row">
+            <span><span class="dim">$</span> <span class="cmd">linkedin</span> <span class="dim ml-2 text-xs">perfil profesional</span></span>
+            <span class="cursor">▊</span>
+          </a>
+
+          <a href="https://argentina-deportes.vercel.app/" target="_blank" rel="noopener noreferrer" class="row">
+            <span><span class="dim">$</span> <span class="cmd">argentina-deportes</span> <span class="dim ml-2 text-xs">proyecto</span></span>
+            <span class="cursor">▊</span>
+          </a>
+
+          <a href="mailto:contacto@jeftech.com" class="row cta">
+            <span><span class="dim" style="color:var(--accent-ink);opacity:.6">$</span> <span class="cmd">contact --hire</span></span>
+            <span class="cursor">▊</span>
+          </a>
+        </nav>
+      </section>
+
+    </div>
+  </main>
+
+  <p class="dim text-center text-xs pb-6"># © 2026 jef_tech</p>
+
+  <script>
+    const lines = document.querySelectorAll('[data-line]');
+    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    if (reduce) {
+      lines.forEach(l => l.classList.add('show'));
+    } else {
+      lines.forEach((line, i) => {
+        setTimeout(() => line.classList.add('show'), i * 260);
+      });
+    }
+  </script>
+
+</body>
+</html>
